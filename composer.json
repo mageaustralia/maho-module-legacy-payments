@@ -1,0 +1,30 @@
+{
+    "name": "mageaustralia/maho-module-legacy-payments",
+    "description": "Catch-all payment method stub so synced orders with disabled / removed payment modules don't fail validation. Resolves Mage_Payment_Helper_Data::getMethodInstance() to a no-op stub for any unknown code, preserving the original method on the order for historical reporting.",
+    "type": "maho-module",
+    "license": "OSL-3.0",
+    "homepage": "https://github.com/mageaustralia/maho-module-legacy-payments",
+    "keywords": ["maho", "magento", "payment", "datasync", "legacy", "stub"],
+    "authors": [
+        {
+            "name": "Mage Australia",
+            "email": "dev@mageaustralia.com.au",
+            "homepage": "https://mageaustralia.com.au"
+        }
+    ],
+    "require": {
+        "php": ">=8.3",
+        "mahocommerce/maho": "^26.3"
+    },
+    "autoload": {
+        "psr-0": {
+            "Mageaustralia_LegacyPayments_": "app/code/community/"
+        }
+    },
+    "extra": {
+        "map": [
+            ["app/code/community/Mageaustralia/LegacyPayments", "app/code/community/Mageaustralia/LegacyPayments"],
+            ["app/etc/modules/Mageaustralia_LegacyPayments.xml", "app/etc/modules/Mageaustralia_LegacyPayments.xml"]
+        ]
+    }
+}
