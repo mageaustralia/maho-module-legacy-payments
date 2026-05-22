@@ -75,11 +75,18 @@
                 <model>mageaustralia_legacypayments/stub</model>
                 <title>eBay Marketplace (legacy)</title>
             </ebay>
+<!--
+                paytele_au is intentionally NOT stubbed here. Fontis_Australia
+                provides a real implementation (australia/payment_paytele) +
+                an admin info block with the Send Payment Link UI; stubbing
+                here would win at config-merge time and break that flow.
+                Keep this comment as a tombstone so nobody re-adds it.
             <paytele_au>
                 <active>0</active>
                 <model>mageaustralia_legacypayments/stub</model>
                 <title>Paytele AU (legacy)</title>
             </paytele_au>
+            -->
             <zipmoneypayment>
                 <active>0</active>
                 <model>mageaustralia_legacypayments/stub</model>

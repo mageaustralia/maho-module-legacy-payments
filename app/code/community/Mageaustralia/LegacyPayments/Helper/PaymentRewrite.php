@@ -46,6 +46,7 @@ class Mageaustralia_LegacyPayments_Helper_PaymentRewrite extends Mage_Payment_He
         if ($instance instanceof Mageaustralia_LegacyPayments_Model_Stub) {
             $instance->setCode((string) $code);
             try {
+                /** @phpstan-ignore-next-line method.notFound */
                 $instance->setStore((int) Mage::app()->getStore()->getId());
             } catch (\Throwable) {
                 // Pre-init contexts - safe to ignore.

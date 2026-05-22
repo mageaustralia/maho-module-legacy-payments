@@ -40,7 +40,7 @@ class Mageaustralia_LegacyPayments_Model_Stub extends Mage_Payment_Model_Method_
     protected $_canVoid                 = false;
     protected $_canUseInternal          = false;
     protected $_canUseCheckout          = false;
-    protected $_canUseForMultishipping  = false;
+    protected bool $_canUseForMultishipping = false;
     protected $_isGateway               = false;
     protected $_canFetchTransactionInfo = false;
     protected $_canCreateBillingAgreement = false;
