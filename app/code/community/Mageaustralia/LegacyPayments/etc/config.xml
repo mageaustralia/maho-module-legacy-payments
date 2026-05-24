@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <!--
     Mageaustralia_LegacyPayments
-    Stubs every payment method observed on legacy synced orders so that
-    Mage_Payment_Helper_Data::getMethodInstance() resolves the code instead
-    of throwing "Unknown payment method".
+    Rewrites Mage_Payment_Helper_Data::getMethodInstance() so that any payment
+    code with no registered model resolves to a lightweight Stub instance
+    instead of throwing "Unknown payment method".
 
-    Stubs are NEVER selectable at checkout (active=0, the Stub model itself
-    returns isAvailable=false). They exist purely so historical orders
-    validate, render, and refund-flag correctly.
+    No payment codes are pre-registered here. The helper rewrite handles every
+    unknown code dynamically; friendly titles for well-known historical codes
+    live in Model/Stub.php (LEGACY_TITLES map).
 
-    To add a method: copy any block, change the code + title.
-    To remove one: delete its block (or set active=0, already the default).
+    Stubs are NEVER selectable at checkout - the Stub model returns
+    isAvailable=false and all _can* flags are false.
 -->
 <config>
     <modules>
@@ -18,117 +18,6 @@
             <version>1.0.0</version>
         </Mageaustralia_LegacyPayments>
     </modules>
-    <default>
-        <payment>
-            <paypal_express>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>PayPal Express (legacy)</title>
-            </paypal_express>
-            <MultiplePayment>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>Multiple Payment (legacy)</title>
-            </MultiplePayment>
-            <gene_braintree_creditcard>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>Braintree Credit Card (legacy)</title>
-            </gene_braintree_creditcard>
-            <gene_braintree_applepay>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>Braintree Apple Pay (legacy)</title>
-            </gene_braintree_applepay>
-            <gene_braintree_paypal>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>Braintree PayPal (legacy)</title>
-            </gene_braintree_paypal>
-            <iframe>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>iFrame Hosted Payment (legacy)</title>
-            </iframe>
-            <ewayau_direct>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>eWAY Direct (legacy)</title>
-            </ewayau_direct>
-            <ewayrapid_notsaved>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>eWAY Rapid (legacy)</title>
-            </ewayrapid_notsaved>
-            <afterpaypayovertime>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>Afterpay Pay Over Time (legacy)</title>
-            </afterpaypayovertime>
-            <catchfeederpayment>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>Catch Feeder Payment (legacy)</title>
-            </catchfeederpayment>
-            <ebay>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>eBay Marketplace (legacy)</title>
-            </ebay>
-<!--
-                paytele_au is intentionally NOT stubbed here. Fontis_Australia
-                provides a real implementation (australia/payment_paytele) +
-                an admin info block with the Send Payment Link UI; stubbing
-                here would win at config-merge time and break that flow.
-                Keep this comment as a tombstone so nobody re-adds it.
-            <paytele_au>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>Paytele AU (legacy)</title>
-            </paytele_au>
-            -->
-            <zipmoneypayment>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>Zip Money (legacy)</title>
-            </zipmoneypayment>
-            <zip_payment>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>Zip Payment (legacy)</title>
-            </zip_payment>
-            <amazon>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>Amazon Pay (legacy)</title>
-            </amazon>
-            <ugiftcert>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>Gift Certificate (legacy)</title>
-            </ugiftcert>
-            <purchaseorder>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>Purchase Order (legacy)</title>
-            </purchaseorder>
-            <m2epropayment>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>M2E Pro Marketplace (legacy)</title>
-            </m2epropayment>
-            <polipay_payment>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>POLi Pay (legacy)</title>
-            </polipay_payment>
-            <ig_cashondelivery>
-                <active>0</active>
-                <model>mageaustralia_legacypayments/stub</model>
-                <title>Cash on Delivery (legacy)</title>
-            </ig_cashondelivery>
-        </payment>
-    </default>
     <global>
         <models>
             <mageaustralia_legacypayments>

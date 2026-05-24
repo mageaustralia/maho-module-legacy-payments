@@ -19,14 +19,54 @@ declare(strict_types=1);
  * the method code to resolve to *some* class. Without a stub it throws
  * "Unknown payment method" and the import row aborts.
  *
- * This class is the "do nothing, but exist" placeholder. Each legacy method
- * code is registered against this class via etc/config.xml. Every "can use"
- * flag is false so checkout never offers it - the order keeps its original
- * method on file (useful for reporting + audit trail) but no NEW order can
- * pick it up.
+ * This class is the "do nothing, but exist" placeholder. The helper rewrite
+ * synthesises an instance of this class dynamically for any unknown payment
+ * code - no config.xml registrations are required. Every "can use" flag is
+ * false so checkout never offers it - the order keeps its original method on
+ * file (useful for reporting + audit trail) but no NEW order can pick it up.
+ *
+ * Friendly display titles for well-known historical codes are stored in
+ * LEGACY_TITLES below. Unknown codes receive a humanized "(legacy)" label
+ * derived from the raw code string.
  */
 class Mageaustralia_LegacyPayments_Model_Stub extends Mage_Payment_Model_Method_Abstract
 {
+    /**
+     * Friendly titles for well-known historical payment codes.
+     *
+     * These titles were previously stored as <title> nodes in etc/config.xml
+     * alongside per-code model registrations. They now live here so the config
+     * layer carries no payment stubs (eliminating the config-merge footgun where
+     * a stub registration could silently win over a real payment module).
+     *
+     * Codes not in this map receive a humanized fallback: underscores/hyphens
+     * are replaced with spaces, each word is title-cased, and " (legacy)" is
+     * appended - e.g. "some_obscure_method" => "Some Obscure Method (legacy)".
+     *
+     * @var array<string, string>
+     */
+    private const LEGACY_TITLES = [
+        'paypal_express'           => 'PayPal Express (legacy)',
+        'MultiplePayment'          => 'Multiple Payment (legacy)',
+        'gene_braintree_creditcard' => 'Braintree Credit Card (legacy)',
+        'gene_braintree_applepay'  => 'Braintree Apple Pay (legacy)',
+        'gene_braintree_paypal'    => 'Braintree PayPal (legacy)',
+        'iframe'                   => 'iFrame Hosted Payment (legacy)',
+        'ewayau_direct'            => 'eWAY Direct (legacy)',
+        'ewayrapid_notsaved'       => 'eWAY Rapid (legacy)',
+        'afterpaypayovertime'      => 'Afterpay Pay Over Time (legacy)',
+        'catchfeederpayment'       => 'Catch Feeder Payment (legacy)',
+        'ebay'                     => 'eBay Marketplace (legacy)',
+        'zipmoneypayment'          => 'Zip Money (legacy)',
+        'zip_payment'              => 'Zip Payment (legacy)',
+        'amazon'                   => 'Amazon Pay (legacy)',
+        'ugiftcert'                => 'Gift Certificate (legacy)',
+        'purchaseorder'            => 'Purchase Order (legacy)',
+        'm2epropayment'            => 'M2E Pro Marketplace (legacy)',
+        'polipay_payment'          => 'POLi Pay (legacy)',
+        'ig_cashondelivery'        => 'Cash on Delivery (legacy)',
+    ];
+
     /**
      * Disabled everywhere - no checkout, no admin order create, no multishipping,
      * no recurring profile, no API. Stubs are read-only by definition.
@@ -93,17 +133,20 @@ class Mageaustralia_LegacyPayments_Model_Stub extends Mage_Payment_Model_Method_
     #[\Override]
     public function getTitle()
     {
-        // Title comes from each per-method <title> node in config.xml so the
-        // order detail page reads "Paid via PayPal Express (legacy)" rather
-        // than a generic stub label. Guarded with try/catch because parent::
-        // getCode() throws when no InfoInstance is attached (e.g. DataSync's
-        // bare validation call to Mage::helper('payment')->getMethodInstance()).
+        // Titles are no longer stored in config.xml. The LEGACY_TITLES map
+        // covers well-known historical codes; everything else gets a humanized
+        // fallback derived from the raw code string.
+        // Guarded with try/catch because getCode() can throw when no
+        // InfoInstance is attached (e.g. DataSync's bare validation call to
+        // Mage::helper('payment')->getMethodInstance()).
         try {
-            $title = (string) $this->getConfigData('title');
-            if ($title !== '') {
-                return $title;
+            $code = $this->getCode();
+            if (isset(self::LEGACY_TITLES[$code])) {
+                return self::LEGACY_TITLES[$code];
             }
-            return (string) $this->getCode();
+            // Humanize: replace _ and - with spaces, title-case, append "(legacy)".
+            $words = preg_replace('/[_\-]+/', ' ', $code) ?? $code;
+            return ucwords($words) . ' (legacy)';
         } catch (\Throwable) {
             return 'Legacy payment method';
         }

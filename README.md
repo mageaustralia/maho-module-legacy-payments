@@ -7,15 +7,15 @@ Catch-all payment-method stub for [Maho](https://mahocommerce.com) (OpenMage / M
 
 ## How it works
 
-Two layers work together:
+A single mechanism handles everything:
 
-1. **Explicit stubs** - `etc/config.xml` registers a curated list of known legacy codes (see below), each pointing to the shared `Stub` model. Every stub carries a friendly title (e.g. "Braintree Credit Card (legacy)") so the order-detail page shows something meaningful.
-
-2. **Catch-all rewrite** - A rewrite of `Mage_Payment_Helper_Data::getMethodInstance()` catches any code that still has no registered model after the config merge and synthesises a `Stub` instance on the fly. This means a single missed code in the config list can no longer break an import batch.
+**Dynamic catch-all rewrite** - The module rewrites `Mage_Payment_Helper_Data::getMethodInstance()`. The rewrite calls `parent::getMethodInstance()` first, so any real registered payment module is returned untouched. For any code that has no registered model the rewrite synthesises a `Stub` instance on the fly, stamping the original code onto it. No config stubs are pre-registered; every unknown code is resolved dynamically.
 
 Stubs are read-only by design. Every `_can*` flag is `false`, and `isAvailable()` always returns `false`. No new order can ever select a stub - existing historical orders simply keep their original payment code for reporting and audit purposes.
 
-## Pre-registered legacy codes
+## Display titles
+
+`Model/Stub.php` contains a built-in `LEGACY_TITLES` map of friendly display titles for well-known historical codes. These titles appear on order-detail pages so the payment column reads something meaningful rather than a raw code string.
 
 | Code | Title |
 |------|-------|
@@ -39,17 +39,9 @@ Stubs are read-only by design. Every `_can*` flag is `false`, and `isAvailable()
 | `polipay_payment` | POLi Pay (legacy) |
 | `ig_cashondelivery` | Cash on Delivery (legacy) |
 
-To register an additional code, add a block to the `<default><payment>` section of `etc/config.xml`:
+Any code not in the map receives a humanized fallback: underscores and hyphens are replaced with spaces, each word is title-cased, and " (legacy)" is appended - e.g. `some_obscure_method` renders as "Some Obscure Method (legacy)".
 
-```xml
-<my_old_method_code>
-    <active>0</active>
-    <model>mageaustralia_legacypayments/stub</model>
-    <title>My Old Method (legacy)</title>
-</my_old_method_code>
-```
-
-The catch-all rewrite handles any code not in the list, so adding explicit entries is optional - it only affects the title shown on order pages.
+To add a friendly title for an additional historical code, add an entry to the `LEGACY_TITLES` constant in `Model/Stub.php`. No config.xml changes are needed - the dynamic rewrite already handles the method resolution.
 
 ## Requirements
 
@@ -73,8 +65,6 @@ No database migrations are included - this module adds no tables.
 No admin configuration is needed. The module is active as soon as it is installed and the cache is flushed.
 
 If you need to verify it is loaded, check **System > Configuration > Advanced > Advanced > Disable Modules Output** - `Mageaustralia_LegacyPayments` should appear in the list.
-
-To inspect which payment codes are currently stubbed, review `app/code/community/Mageaustralia/LegacyPayments/etc/config.xml`.
 
 ## Related modules
 
