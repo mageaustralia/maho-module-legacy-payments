@@ -24,7 +24,8 @@
     "extra": {
         "map": [
             ["app/code/community/Mageaustralia/LegacyPayments", "app/code/community/Mageaustralia/LegacyPayments"],
-            ["app/etc/modules/Mageaustralia_LegacyPayments.xml", "app/etc/modules/Mageaustralia_LegacyPayments.xml"]
+            ["app/etc/modules/Mageaustralia_LegacyPayments.xml", "app/etc/modules/Mageaustralia_LegacyPayments.xml"],
+            ["app/design/adminhtml/default/default/template/mageaustralia/legacypayments", "app/design/adminhtml/default/default/template/mageaustralia/legacypayments"]
         ]
     }
 }

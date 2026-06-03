@@ -24,6 +24,11 @@
                 <class>Mageaustralia_LegacyPayments_Model</class>
             </mageaustralia_legacypayments>
         </models>
+        <blocks>
+            <mageaustralia_legacypayments>
+                <class>Mageaustralia_LegacyPayments_Block</class>
+            </mageaustralia_legacypayments>
+        </blocks>
         <helpers>
             <mageaustralia_legacypayments>
                 <class>Mageaustralia_LegacyPayments_Helper</class>

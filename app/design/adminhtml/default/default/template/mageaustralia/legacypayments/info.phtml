@@ -1,0 +1,58 @@
+<?php
+/**
+ * @var Mage_Payment_Block_Info $this
+ *
+ * Maho-safe (escapeHtml only). Renders a stubbed legacy method's synced
+ * additional_information with humanised labels (known PayPal keys mapped
+ * explicitly), plus the last transaction id. Skips internal/empty noise keys.
+ */
+$labels = [
+    'paypal_payer_id'               => 'Payer ID',
+    'paypal_payer_email'            => 'Payer Email',
+    'paypal_payer_status'           => 'Payer Status',
+    'paypal_address_status'         => 'Payer Address Status',
+    'paypal_protection_eligibility' => 'Merchant Protection Eligibility',
+    'paypal_correlation_id'         => 'Last Correlation ID',
+    'paypal_payment_status'         => 'Payment Status',
+    'paypal_pending_reason'         => 'Pending Reason',
+];
+$skip = [
+    'button',
+    'paypal_express_checkout_redirect_required',
+    'paypal_express_checkout_shipping_method',
+    'paypal_express_checkout_payer_id',
+    'paypal_express_checkout_token',
+];
+$method = $this->getMethod();
+$info   = $this->getInfo();
+$rows   = [];
+$add    = $info ? $info->getAdditionalInformation() : [];
+if (is_array($add)) {
+    foreach ($add as $k => $v) {
+        if (in_array($k, $skip, true)) {
+            continue;
+        }
+        if ($v === null || $v === '' || (is_array($v) && empty($v))) {
+            continue;
+        }
+        $label = $labels[$k] ?? ucwords(str_replace('_', ' ', (string) preg_replace('/^(paypal|gene|braintree)_/', '', (string) $k)));
+        $rows[$label] = is_array($v) ? json_encode($v) : (string) $v;
+    }
+}
+if ($info && $info->getLastTransId()) {
+    $rows['Last Transaction ID'] = (string) $info->getLastTransId();
+}
+?>
+<?php if ($method): ?>
+<div><strong><?php echo $this->escapeHtml((string) $method->getTitle()); ?></strong></div>
+<?php endif; ?>
+<?php if ($rows): ?>
+<table class="data" cellspacing="0">
+    <?php foreach ($rows as $label => $value): ?>
+        <tr>
+            <th style="text-align:left;padding:2px 15px 2px 0;vertical-align:top"><?php echo $this->escapeHtml($label); ?>:</th>
+            <td style="padding:2px 0"><?php echo $this->escapeHtml($value); ?></td>
+        </tr>
+    <?php endforeach; ?>
+</table>
+<?php endif; ?>

@@ -71,6 +71,7 @@ class Mageaustralia_LegacyPayments_Model_Stub extends Mage_Payment_Model_Method_
      * Disabled everywhere - no checkout, no admin order create, no multishipping,
      * no recurring profile, no API. Stubs are read-only by definition.
      */
+    protected $_infoBlockType           = 'mageaustralia_legacypayments/info';
     protected $_isInitializeNeeded      = false;
     protected $_canAuthorize            = false;
     protected $_canCapture              = false;
